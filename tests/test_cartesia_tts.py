@@ -203,3 +203,20 @@ class TestCartesiaUpdateSettingsFinalizesOldContext(unittest.IsolatedAsyncioTest
         self.assertEqual(pushed, [])
         self.assertIsNone(service._flushed)
         self.assertEqual(service._turn_context_id, old_ctx)
+
+
+class TestCartesiaPauseFrameProcessingOverride(unittest.TestCase):
+    """pause_frame_processing is a default, not a hardcoded value.
+
+    The pause_watchdog_timeout_s guard (a context completing with no audio)
+    only arms when pause_frame_processing is True, so applications must be
+    able to turn it on. See #5305.
+    """
+
+    def test_defaults_to_false(self):
+        service = CartesiaTTSService(api_key="test-key")
+        self.assertFalse(service._pause_frame_processing)
+
+    def test_application_can_override(self):
+        service = CartesiaTTSService(api_key="test-key", pause_frame_processing=True)
+        self.assertTrue(service._pause_frame_processing)
