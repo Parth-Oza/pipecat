@@ -356,11 +356,15 @@ class CartesiaTTSService(WebsocketTTSService):
         if settings is not None:
             default_settings.apply_update(settings)
 
+        # Default only — applications may override (e.g. to arm the
+        # pause_watchdog_timeout_s guard against a stream that reports success
+        # but produces no audio).
+        kwargs.setdefault("pause_frame_processing", False)
+
         super().__init__(
             text_aggregation_mode=text_aggregation_mode,
             aggregate_sentences=aggregate_sentences,
             push_text_frames=False,
-            pause_frame_processing=False,
             sample_rate=sample_rate,
             push_start_frame=True,
             settings=default_settings,
